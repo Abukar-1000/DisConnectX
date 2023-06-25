@@ -1,0 +1,21 @@
+body {
+    background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userInput {
+    margin-top: 20vh;
+    border: solid white 2px;
+    border-radius: 10px;
+
+    padding: 2vh 1vw;
+    overflow: hidden;
+    border-top: none;
+    width: fit-content;
+}
+
+button {
+    font-size: 10vw;
+}

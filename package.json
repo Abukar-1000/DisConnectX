@@ -1,0 +1,26 @@
+{
+  "name": "disconnectx",
+  "version": "1.0.0",
+  "description": "disconnects users from your local wifi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abukar-1000/DisConnectX.git"
+  },
+  "author": "Abukar Djama",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abukar-1000/DisConnectX/issues"
+  },
+  "homepage": "https://github.com/Abukar-1000/DisConnectX#readme",
+  "dependencies": {
+    "child_process": "^1.0.2",
+    "express": "^4.18.2",
+    "http": "^0.0.1-security",
+    "socket.io": "^4.7.0",
+    "socket.io-client": "^4.7.0"
+  }
+}
