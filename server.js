@@ -46,50 +46,30 @@ app.get("/",(req,res) => {
 
 app.get("/test",(req,res) => {
     // authenticate device here
-    ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+    ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    ip = ip.slice(7, ip.length);
     // res.sendFile("index.html");
     res.write(`your ip is ${(ip.length > 0)? ip: "no value"}`);
     res.send();
 })
 
 
-// io.on("connection", socket => {
-//     console.log(`\n\n\n\n\n\n\n`);
-//     console.log(`\n\n\n\n\n\n\n`);
-//     console.log(socket.request.connection.remoteAddress);
-//     console.log(`socket id: ${socket.id}\t\tip: ${0}`);
-
-//     // socket.on("connection", soc => {
-//     //     console.log(`socket id: ${socket.id}\t\tip: ${socket.conn.remoteAddress}`);
-//     // })
-//     // send over device data
-//     socket.emit("deviceDetails", DEVICE_DATA);
-
-
-//     socket.on("message", data => {
-//         console.log(`recieved: `, data);
-//     })
-
-// });
-
 
 io.on("connection", socket => {
-    // console.log(`\n\n\n\n\n\n\n`);
-    // console.log(`\n\n\n\n\n\n\n`);
-    var address = socket.handshake.address;
-    console.log(address);
-    console.log(`socket id: ${socket.id}\t\tip: ${ip}`);
-
-    // socket.on("connection", soc => {
-    //     console.log(`socket id: ${socket.id}\t\tip: ${socket.conn.remoteAddress}`);
-    // })
     
+    var address = socket.handshake.address;
+    io.sockets.on("connection", soc => {
+        console.log(`\n\nsocket field triggered \n\n`);
+    })
+
     // send over device data
     socket.emit("deviceDetails", DEVICE_DATA);
 
 
-    socket.on("message", data => {
+    // respond to a deuth request
+    socket.on("deauthenticate", data => {
         console.log(`recieved: `, data);
+
     })
 
 });
@@ -97,5 +77,5 @@ io.on("connection", socket => {
 
 
 socketServer.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}\nsocket on ${port}\n sockets: ${io.sockets}`)
+    console.log(`Example app listening at http://localhost:${port}\nsocket on ${port}\n`)
 })
