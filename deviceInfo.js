@@ -1,29 +1,23 @@
 
 // creates an object representing a device on the network;
-const deviceData = (name, mac2_5GHZ, mac5GHZ) => {
+const deviceData = (name, mac2_4GHZ, mac5GHZ) => {
     
     this.name = name;
-    this.mac2_5 = mac2_5GHZ;
+    this.mac2_4 = mac2_4GHZ;
     this.mac5 = mac5GHZ;
-    
-    this.generateDeuthCommand = () => {
-        let command = "";
-        let [mac2_5, mac5] = ["", ""];
-        // if (this.mac2_5){
-        //     mac2_5 = this.
-        // }
-    }
+
     return {
         name: name,
-        mac2_5: mac2_5GHZ,
-        mac5: mac5GHZ
+        mac2_4: mac2_4GHZ,
+        mac5: mac5GHZ,
+        connected:  true
     };
 };
 
 
 // all crucial device info on local network
 const DEVICE_DATA = {
-    testDevice: deviceData("test", null, "1E:17:3F:8D:E9:96")
+    test: deviceData("test", null, "1E:17:3F:8D:E9:96")
 };
 
 module.exports = {

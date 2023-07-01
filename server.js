@@ -15,7 +15,8 @@ const socketConfig = {
 };
 const io = require("socket.io")(socketServer, socketConfig);
 
-const { exec } = require("child_process")
+const { exec } = require("child_process");
+const { runParallelDeuth } = require("./deuthTools.js");
 
 // exec("ls -la", (err, stdout, stderr) => {
 //     if (err) {
@@ -69,8 +70,14 @@ io.on("connection", socket => {
     // respond to a deuth request
     socket.on("deauthenticate", data => {
         console.log(`recieved: `, data);
+        
+        // alter the connection state of the targeted device & broadcast changes to all admin devices
+        let targetDevice = DEVICE_DATA[data.name];
+        targetDevice.connected = data.connected;
 
-    })
+        runParallelDeuth(DEVICE_DATA);
+        io.emit("deviceDetails", DEVICE_DATA);
+})
 
 });
 
