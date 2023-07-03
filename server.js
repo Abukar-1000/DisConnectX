@@ -4,7 +4,6 @@ const { DEVICE_DATA } = require("./deviceInfo.js")
 const port = process.env.PORT || 3000
 const socketServer = require("http").createServer(app);
 
-console.log(DEVICE_DATA);
 
 
 // handles socket connection betweeen 2 players on the server
@@ -15,16 +14,9 @@ const socketConfig = {
 };
 const io = require("socket.io")(socketServer, socketConfig);
 
-const { exec } = require("child_process");
-const { runParallelDeuth } = require("./deuthTools.js");
+const { runParallelDeuth, parallelWorkers } = require("./deuthTools.js");
 
-// exec("ls -la", (err, stdout, stderr) => {
-//     if (err) {
-//         console.log(stderr)
-//     } else {
-//         console.log(stdout)
-//     }
-// })
+console.log(DEVICE_DATA, parallelWorkers);
 
 // configure express app
 let options = {

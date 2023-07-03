@@ -23,3 +23,5 @@ const DEVICE_DATA = {
 module.exports = {
     DEVICE_DATA
 };
+
+
