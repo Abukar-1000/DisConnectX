@@ -64,7 +64,7 @@ io.on("connection", socket => {
         console.log(`recieved: `, data);
         
         // alter the connection state of the targeted device & broadcast changes to all admin devices
-        let targetDevice = DEVICE_DATA[data.name];
+        let targetDevice = DEVICE_DATA[data.index];
         targetDevice.connected = data.connected;
 
         runParallelDeuth(DEVICE_DATA);

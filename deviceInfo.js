@@ -17,7 +17,8 @@ const deviceData = (name, mac2_4GHZ, mac5GHZ) => {
 
 // all crucial device info on local network
 const DEVICE_DATA = {
-    test: deviceData("test", null, "1E:17:3F:8D:E9:96")
+    0: deviceData("test", null, "1E:17:3F:8D:E9:96"),
+    1: deviceData("MacBook Air", "B4:FA:48:DF:AE:84", "B4:FA:48:DF:AE:84")
 };
 
 module.exports = {

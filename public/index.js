@@ -17,7 +17,10 @@ function generateStateCss(isConnected) {
 }
 
 function getConnectedState(event, devices){
-    let device = devices[event.target.innerText];
+    const INDEX = event.target.childNodes[3].innerText;
+    let device = devices[INDEX];
+    console.log("C device info:", event);
+    console.log(devices, device);
     return device.connected;
 }
 
@@ -26,6 +29,7 @@ function createButtonElements(obj){
     // create html button elements using our objects
     // returns an array of buttons
     let buttons = [];
+    let counter = 0;
 
     for (const key in obj){
         let deviceInfo = obj[key];
@@ -35,24 +39,32 @@ function createButtonElements(obj){
         button.innerText = deviceInfo.name;
 
         // create children to hold mac data
-        let [mac2_4, mac5] = [document.createElement("p"), document.createElement("p")];
+        let [mac2_4, mac5, index] = [document.createElement("p"), document.createElement("p"), document.createElement("p")];
         mac2_4.innerText = deviceInfo.mac2_4;
         mac5.innerText = deviceInfo.mac5;
+        index.innerText = counter;
+
 
         mac2_4.style.display = 'none';
         mac5.style.display = 'none';
+        index.style.display = 'none';
 
         // attach to button
         button.appendChild(mac2_4);
         button.appendChild(mac5);
+        button.appendChild(index);
 
         button.type = "button";
-        console.log("device info:", deviceInfo);
+        // console.log("device info:", deviceInfo);
         button.className = generateStateCss(deviceInfo.connected);
+        button.style.display = "block";
+        button.style.width = "100%";
 
         // store button
         buttons.push(button);
+        counter++;
     }
+
 
     return buttons;
 }
@@ -82,11 +94,14 @@ document.addEventListener("readystatechange", e => {
 
             // attach event listener to send deauth request
             button.addEventListener("click", e => {
+                const INV_CONNECTION = !getConnectedState(e, data);
+
                 const REQUESTED_DATA = {
                     name: e.target.innerText,
                     mac2_4: e.target.childNodes[1].innerText,
                     mac5: e.target.childNodes[2].innerText,
-                    connected: !getConnectedState(e, data)
+                    index: e.target.childNodes[3].innerText,
+                    connected: INV_CONNECTION
                 };
 
                 SOCKET.emit("deauthenticate", REQUESTED_DATA);

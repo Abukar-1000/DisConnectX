@@ -78,6 +78,10 @@ function runParallelDeuth(allDevices){
         parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
             workerData: COMMAND_2_4_GHZ 
         })
+        
+        parallelWorkers.N2_4GHZ.on("message", data => {
+            console.log(data);
+        });
     }
     
     // spawn 5 GHZ thread
@@ -91,11 +95,14 @@ function runParallelDeuth(allDevices){
         parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
             workerData: COMMAND_5_GHZ 
         });
+        
+        parallelWorkers.N5GHZ.on("message", data => {
+            console.log(data);
+        });
     }
 
-    parallelWorkers.N5GHZ.on("message", data => {
-        console.log(data);
-    });
+
+
 
     console.log(`deauth\n${COMMAND_2_4_GHZ}\n${COMMAND_5_GHZ}\n\n`);
 }
