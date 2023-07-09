@@ -24,6 +24,14 @@ function getConnectedState(event, devices){
     return device.connected;
 }
 
+// network type selector
+function grabNetworkType(){
+    /*
+        common case is selecting 2.4 GHZ network, so it is selected by default.
+        Otherwise, handles user selecting to attack a 5 GHZ network.
+    */
+    return document.querySelector(".form-select").value;
+}
 
 function createButtonElements(obj){
     // create html button elements using our objects
@@ -57,8 +65,8 @@ function createButtonElements(obj){
         button.type = "button";
         // console.log("device info:", deviceInfo);
         button.className = generateStateCss(deviceInfo.connected);
-        button.style.display = "block";
-        button.style.width = "100%";
+        // button.style.display = "block";
+        // button.style.width = "100%";
 
         // store button
         buttons.push(button);
@@ -95,12 +103,13 @@ document.addEventListener("readystatechange", e => {
             // attach event listener to send deauth request
             button.addEventListener("click", e => {
                 const INV_CONNECTION = !getConnectedState(e, data);
-
+                const NETWORK_TYPE = document.querySelector(".form-select").value;
                 const REQUESTED_DATA = {
                     name: e.target.innerText,
                     mac2_4: e.target.childNodes[1].innerText,
                     mac5: e.target.childNodes[2].innerText,
                     index: e.target.childNodes[3].innerText,
+                    networkType: NETWORK_TYPE,
                     connected: INV_CONNECTION
                 };
 

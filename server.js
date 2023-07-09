@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { DEVICE_DATA } = require("./deviceInfo.js")
+const { DEVICE_DATA, NETWORK_DATA } = require("./deviceInfo.js")
 const port = process.env.PORT || 3000
 const socketServer = require("http").createServer(app);
 
@@ -14,7 +14,7 @@ const socketConfig = {
 };
 const io = require("socket.io")(socketServer, socketConfig);
 
-const { runParallelDeuth, parallelWorkers } = require("./deuthTools.js");
+const { runParallelDeuth, parallelWorkers, runParallelDeuthLite } = require("./deuthTools.js");
 
 console.log(DEVICE_DATA, parallelWorkers);
 
@@ -66,8 +66,10 @@ io.on("connection", socket => {
         // alter the connection state of the targeted device & broadcast changes to all admin devices
         let targetDevice = DEVICE_DATA[data.index];
         targetDevice.connected = data.connected;
-
-        runParallelDeuth(DEVICE_DATA);
+        
+        // check if client is attacking 2.4 GHZ network or 5 GHZ network
+        const TARGET_NETWORK = (data.networkType === "2.4 GHZ")? NETWORK_DATA[0] : NETWORK_DATA[1];
+        runParallelDeuthLite(DEVICE_DATA, TARGET_NETWORK);
         io.emit("deviceDetails", DEVICE_DATA);
 })
 
