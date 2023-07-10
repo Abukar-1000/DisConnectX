@@ -174,7 +174,7 @@ function runParallelDeuthLite(allDevices, networkData){
     }
 }
 
-
+// depricate
 function executeCMD(command){
     // executes a terminal command
     exec(command, (err, stdout, stderr) => {
