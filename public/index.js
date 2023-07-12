@@ -25,12 +25,12 @@ function getConnectedState(event, devices){
 }
 
 // network type selector
-function grabNetworkType(){
+function setNetworkType(type){
     /*
-        common case is selecting 2.4 GHZ network, so it is selected by default.
-        Otherwise, handles user selecting to attack a 5 GHZ network.
+        sets the current type of network on the UI
+        either 2.4 or 5 GHZ
     */
-    return document.querySelector(".form-select").value;
+    return document.querySelector(".form-select").value = type;
 }
 
 function createButtonElements(obj){
@@ -95,8 +95,10 @@ document.addEventListener("readystatechange", e => {
         3) user will be able to click on a device and request to deauthenticate will be sent to the server
     */
     SOCKET.on("deviceDetails", data => {
-        let buttons = createButtonElements(data);
-
+        const {devices, networkType} = data;
+        let buttons = createButtonElements(devices);
+        setNetworkType(networkType);
+        
         inputField.innerHTML = "";
         buttons.forEach(button => {
 

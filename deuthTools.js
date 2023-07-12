@@ -15,7 +15,7 @@ function generateDeauthCMD(targets){
     // generates the deauth command to disconnect targets from 2.4 and 5 GHZ WI-FI
     const ROUTER_2_4_GHZ_MAC = "88:AD:43:45:EC:48";
     const ROUTER_5_GHZ_MAC = "88:AD:43:45:EC:50";
-    const PACKET_AMT = 1_000_000_000;
+    const PACKET_AMT = 10;
     let TARGETS2_4GHZ = "";
     let TARGETS5GHZ = "";
 

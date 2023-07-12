@@ -5,4 +5,4 @@ const { execSync } = require("child_process");
 let stdOut = null;
 while (true) {
     stdOut = execSync(workerData);
-}
+} 

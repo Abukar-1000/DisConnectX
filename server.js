@@ -28,6 +28,8 @@ let options = {
     redirect: false
 }
 
+// keep track of network attacked when broadcasting to all users
+let networkType = null;
 app.use(express.static('public', options))
 
 let ip; 
@@ -55,14 +57,21 @@ io.on("connection", socket => {
         console.log(`\n\nsocket field triggered \n\n`);
     })
 
+    const INITIALIZATION_DATA = {
+        devices: DEVICE_DATA,
+        networkType: (networkType)? networkType: "2.4 GHZ"
+    }
+
     // send over device data
-    socket.emit("deviceDetails", DEVICE_DATA);
+    socket.emit("deviceDetails", INITIALIZATION_DATA);
 
 
     // respond to a deuth request
     socket.on("deauthenticate", data => {
         console.log(`recieved: `, data);
         
+        // update network type
+        networkType = data.networkType;
         // alter the connection state of the targeted device & broadcast changes to all admin devices
         let targetDevice = DEVICE_DATA[data.index];
         targetDevice.connected = data.connected;
