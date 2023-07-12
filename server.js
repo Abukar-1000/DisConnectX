@@ -79,7 +79,12 @@ io.on("connection", socket => {
         // check if client is attacking 2.4 GHZ network or 5 GHZ network
         const TARGET_NETWORK = (data.networkType === "2.4 GHZ")? NETWORK_DATA[0] : NETWORK_DATA[1];
         runParallelDeuthLite(DEVICE_DATA, TARGET_NETWORK);
-        io.emit("deviceDetails", DEVICE_DATA);
+        const DEAUTH_RESPONSE = {
+            devices: DEVICE_DATA,
+            networkType: networkType
+        };
+        
+        io.emit("deviceDetails", DEAUTH_RESPONSE);
 })
 
 });

@@ -98,13 +98,13 @@ document.addEventListener("readystatechange", e => {
         const {devices, networkType} = data;
         let buttons = createButtonElements(devices);
         setNetworkType(networkType);
-        
+        console.log(data);
         inputField.innerHTML = "";
         buttons.forEach(button => {
 
             // attach event listener to send deauth request
             button.addEventListener("click", e => {
-                const INV_CONNECTION = !getConnectedState(e, data);
+                const INV_CONNECTION = !getConnectedState(e, devices);
                 const NETWORK_TYPE = document.querySelector(".form-select").value;
                 const REQUESTED_DATA = {
                     name: e.target.innerText,
