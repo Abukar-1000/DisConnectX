@@ -168,15 +168,15 @@ function runParallelDeuthLite(allDevices, networkData){
             console.log(data);
         });
         
-        // parallelWorkers.N2_4GHZ.on("error", err => {
-        //     console.log(`2.4 GHZ deuath worker errored with: \n${err} `);
+        parallelWorkers.N2_4GHZ.on("error", err => {
+            console.log(`2.4 GHZ deuath worker errored with: \n${err} `);
             
-        //     // respwan DDOS thread
-        //     parallelWorkers.N2_4GHZ.terminate();
-        //     parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
-        //         workerData: parallelWorkers.COMMAND_2_4_GHZ 
-        //     });
-        // });
+            // respwan DDOS thread
+            // parallelWorkers.N2_4GHZ.terminate();
+            // parallelWorkers.N2_4GHZ = new Worker("./deauthWorker2_4.js", {
+            //     workerData: parallelWorkers.COMMAND_2_4_GHZ 
+            // });
+        });
         parallelWorkers.N2_4GHZ_Listener.on("error", err => {
             console.log(`2.4 GHZ listener worker errored with: \n${err} `);
         });
@@ -197,16 +197,16 @@ function runParallelDeuthLite(allDevices, networkData){
             console.log(data);
         });
 
-        // parallelWorkers.N5GHZ.on("error", err => {
-        //     console.log(`5 GHZ deuath worker errored with: \n${err} `);
+        parallelWorkers.N5GHZ.on("error", err => {
+            console.log(`5 GHZ deuath worker errored with: \n${err} `);
             
-        //     // respwan DDOS thread
-        //     parallelWorkers.N5GHZ.terminate();
-        //     parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
-        //         workerData: parallelWorkers.COMMAND_5_GHZ 
-        //     });
+            // respwan DDOS thread
+            // parallelWorkers.N5GHZ.terminate();
+            // parallelWorkers.N5GHZ = new Worker("./deauthWorker5.js", {
+            //     workerData: parallelWorkers.COMMAND_5_GHZ 
+            // });
 
-        // });
+        });
         parallelWorkers.N5GHZ_Listener.on("error", err => {
             console.log(`5 GHZ listener worker errored with: \n${err} `);
         });
