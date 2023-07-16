@@ -4,4 +4,4 @@ const { executeCMD } = require("./deuthTools");
 // infinite deauth attack
 let stdOut = null;
 let type = "2.4 GHZ Listener";
-executeCMD(workerData, type);
+asyncExecuteCMD(workerData, type);

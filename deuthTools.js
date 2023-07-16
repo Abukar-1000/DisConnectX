@@ -223,10 +223,21 @@ function executeCMD(command, type){
     // executeCMD(command, type);
 }
 
+function asyncExecuteCMD(command, type){
+    // executes a terminal command asynchronously
+    exec(command, (err, stdout, stderr) => {
+        if (err) {
+            console.log(`${type} errored with: \n${stderr}`);
+        } else {
+            console.log(stdout)
+        }
+    })
+}
 
 module.exports = {
     runParallelDeuth,
     runParallelDeuthLite,
     executeCMD,
+    asyncExecuteCMD,
     parallelWorkers
 }

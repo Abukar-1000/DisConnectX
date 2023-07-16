@@ -5,5 +5,5 @@ const { executeCMD } = require("./deuthTools");
 let stdOut = null;
 let type = "2.4 GHZ Deauth Worker";
 while (true) {
-    executeCMD(workerData, type);
+    asyncExecuteCMD(workerData, type);
 } 
